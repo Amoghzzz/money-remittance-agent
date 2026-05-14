@@ -23,14 +23,28 @@ except Exception:
 st.markdown("""
 <style>
 
-/* Background */
+/* Global background */
 .stApp {
     background: linear-gradient(135deg, #0A0F1E, #1A1F3C);
     color: #E8EEF9;
     font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-/* Glass card */
+/* Top nav bar */
+header[data-testid="stHeader"] {
+    background: rgba(20,25,45,0.85);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 0.8rem 2rem;
+}
+header[data-testid="stHeader"]::after {
+    content: "🚀 Compliance Buddy – Futuristic AI Compliance Platform";
+    color: #E8EEF9;
+    font-weight: 600;
+    font-size: 16px;
+    text-shadow: 0 0 8px rgba(0,224,255,0.4);
+}
+
+/* Glass cards */
 .glass {
     background: rgba(255,255,255,0.08);
     border: 1px solid rgba(255,255,255,0.15);
@@ -45,7 +59,7 @@ st.markdown("""
     box-shadow: 0 10px 50px rgba(0,0,0,0.6);
 }
 
-/* Neon button */
+/* Neon buttons */
 .stButton button {
     background: linear-gradient(90deg, #3A7CFF, #00E0FF);
     color: white;
@@ -90,20 +104,22 @@ h1, h2, h3 {
 
 </style>
 """, unsafe_allow_html=True)
-
 # =========================
 # ERROR SAFE AI FUNCTION
 # =========================
 SYSTEM_PROMPT = """
-You are a senior RBI banking compliance expert.
+You are Compliance Copilot, a senior RBI banking compliance expert trusted by top fintech firms.
 
-Always respond in:
-1. Verdict
-2. Reason
-3. Regulatory Reference
-4. Suggested Fix
+Always respond in this structured format:
+1. **Verdict** – Clear yes/no or compliant/non‑compliant statement.
+2. **Reason** – Concise explanation in plain language.
+3. **Regulatory Reference** – Cite RBI circulars, guidelines, or acts.
+4. **Suggested Fix** – Actionable step to achieve compliance.
 
-Be precise and avoid long explanations.
+Guidelines:
+- Be precise, professional, and empathetic.
+- Avoid jargon; use user‑friendly phrasing.
+- Keep answers short but authoritative.
 """
 
 def ask_ai(question):
