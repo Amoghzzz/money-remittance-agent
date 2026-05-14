@@ -8,162 +8,200 @@ from streamlit_option_menu import option_menu
 st.set_page_config(
     page_title="Compliance Copilot",
     layout="wide",
-    page_icon="🚀"
+    page_icon="🛡️"
 )
 
-# Safe API init
-try:
-    client = genai.Client(api_key=st.secrets["GOOGLE_API_KEY"])
-except Exception:
-    client = None
-
-# ======================
-# ULTRA PREMIUM STYLING
-# ======================
-st.markdown(
-    """
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
-
-    .stApp {
-        background: #0A0B12;
-        color: #F0F4FF;
-    }
-
-    .main .block-container {
-        padding-top: 1.5rem;
-        max-width: 1400px;
-    }
-
-    /* Glassmorphism */
-    .glass {
-        background: rgba(20, 25, 45, 0.65);
-        border: 1px solid rgba(100, 180, 255, 0.18);
-        border-radius: 20px;
-        backdrop-filter: blur(24px);
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
-        padding: 24px;
-    }
-
-    h1, h2, h3, h4 {
-        font-family: 'Space Grotesk', sans-serif;
-        letter-spacing: -0.025em;
-    }
-
-    .hero-title {
-        font-size: 3.1rem;
-        font-weight: 700;
-        background: linear-gradient(90deg, #60E0FF, #A0B8FF, #C8A8FF);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0.5rem;
-    }
-
-    /* Sidebar styling */
-    section[data-testid="stSidebar"] {
-        background: #0F111D;
-        border-right: 1px solid #1E2A5E;
-    }
-
-    /* Custom Metric styling */
-    [data-testid="stMetricValue"] {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 2rem;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+client = genai.Client(api_key=st.secrets["GOOGLE_API_KEY"])
 
 # =========================
-# ERROR SAFE AI FUNCTION
+# PREMIUM DARK UI THEME
 # =========================
-SYSTEM_PROMPT = """<Improved prompt above>"""
+st.markdown("""
+<style>
 
-def ask_ai(question):
-    if client is None:
-        return "⚠️ System error: AI client not initialized. Check API key."
-    if not question or len(question.strip()) < 5:
-        return "⚠️ Please enter a meaningful compliance question."
-    try:
-        response = client.models.generate_content(
-            model="models/gemini-2.5-flash",
-            contents=SYSTEM_PROMPT + "\n\nUser:\n" + question,
-            config={"max_output_tokens": 350}
-        )
-        return response.text
-    except Exception as e:
-        return f"⚠️ System Error: {str(e)}"
+.stApp {
+    background: radial-gradient(circle at top left, #0B1220, #05070F);
+    color: #E8EEF9;
+}
+
+/* glass card */
+.card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(120,160,255,0.15);
+    border-radius: 16px;
+    padding: 18px;
+    backdrop-filter: blur(18px);
+}
+
+/* sidebar */
+section[data-testid="stSidebar"] {
+    background: #0A0F1C;
+    border-right: 1px solid #1B2A4A;
+}
+
+/* buttons */
+.stButton button {
+    background: linear-gradient(90deg, #2F6BFF, #5EEAD4);
+    color: white;
+    border-radius: 10px;
+    border: none;
+    padding: 0.6rem 1rem;
+    font-weight: 600;
+}
+
+/* inputs */
+textarea {
+    border-radius: 12px !important;
+}
+
+/* headings */
+h1, h2, h3 {
+    color: #E8EEF9 !important;
+}
+
+.small {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 # =========================
-# NAVIGATION
+# SIDEBAR (NO DASHBOARD)
 # =========================
 with st.sidebar:
+    st.title("🛡️ Compliance Copilot")
+
     selected = option_menu(
-        "🚀 Compliance Copilot",
-        ["Dashboard", "Ask Compliance", "Journey Validator", "RBI Circular Explorer"],
-        icons=["house", "chat", "diagram-3", "book"],
+        None,
+        ["Ask Compliance", "Journey Validator", "RBI Explorer"],
+        icons=["chat-dots", "diagram-3", "book"],
         default_index=0
     )
 
+    st.markdown("---")
+    st.caption("AI Governance Engine v2.0")
+
 # =========================
-# DASHBOARD
+# AI FUNCTION
 # =========================
-if selected == "Dashboard":
-    st.title("📊 RBI Governance Dashboard")
+SYSTEM_PROMPT = """
+You are an RBI compliance expert.
+
+Return:
+1. Verdict
+2. Reason
+3. RBI reference
+4. Fix
+Keep it structured and concise.
+"""
+
+def ask_ai(q):
+    try:
+        res = client.models.generate_content(
+            model="models/gemini-1.5-flash-001",
+            contents=SYSTEM_PROMPT + "\n\n" + q,
+            config={"max_output_tokens": 350}
+        )
+        return res.text
+    except Exception as e:
+        return f"System Error: {str(e)}"
+
+# =========================
+# MAIN UI (INSPIRED BY YOUR IMAGE)
+# =========================
+
+st.title("AI Compliance Workspace")
+
+col_main, col_right = st.columns([2.2, 1])
+
+# =========================
+# LEFT MAIN WORKSPACE
+# =========================
+with col_main:
+
+    if selected == "Ask Compliance":
+
+        st.markdown("### 💬 Ask Compliance Intelligence")
+
+        query = st.text_area(
+            " ",
+            placeholder="Ask about RBI rules, onboarding flows, KYC, remittance compliance..."
+        )
+
+        if st.button("Analyze"):
+            with st.spinner("Analyzing RBI regulations..."):
+                result = ask_ai(query)
+
+            st.markdown('<div class="card">', unsafe_allow_html=True)
+            st.markdown("### 🧠 Compliance Output")
+            st.write(result)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+    elif selected == "Journey Validator":
+
+        st.markdown("### 🧾 Journey Risk Engine")
+
+        journey_type = st.selectbox(
+            "Journey Type",
+            ["Onboarding", "Remittance", "Loan", "KYC Update"]
+        )
+
+        steps = st.text_area(
+            "Journey Steps",
+            placeholder="OTP → Aadhaar → PAN → Video KYC"
+        )
+
+        if st.button("Validate Journey"):
+            q = f"""
+            Validate this journey:
+            Type: {journey_type}
+            Steps: {steps}
+            """
+
+            with st.spinner("Running compliance engine..."):
+                result = ask_ai(q)
+
+            st.markdown('<div class="card">', unsafe_allow_html=True)
+            st.markdown("### 📋 Compliance Result")
+            st.write(result)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+    else:
+
+        st.markdown("### 📚 RBI Explorer")
+        st.info("Semantic RBI circular search coming soon (RAG layer).")
+
+# =========================
+# RIGHT PANEL (LIKE YOUR IMAGE)
+# =========================
+with col_right:
+
+    st.markdown("### 🧠 AI Insights")
 
     st.markdown("""
-    <div class="glass">
-    <b>Welcome to Compliance Copilot</b><br>
-    Governance Health: <span style="color:#00E0FF">Stable</span><br>
-    2 new RBI circulars detected in last 24h.
+    <div class="card">
+    <b>Risk Score</b><br>
+    3/10 (Low Risk)
     </div>
     """, unsafe_allow_html=True)
 
-    st.button("Review Changes")
+    st.markdown("<br>", unsafe_allow_html=True)
 
-    col1, col2, col3, col4 = st.columns(4)
-    col1.markdown('<div class="glass">Compliance Health<br><b>97.8%</b></div>', unsafe_allow_html=True)
-    col2.markdown('<div class="glass">Journeys Validated<br><b>1,284 (+12%)</b></div>', unsafe_allow_html=True)
-    col3.markdown('<div class="glass">Active Risks<br><b>9</b></div>', unsafe_allow_html=True)
-    col4.markdown('<div class="glass">AI Response Time<br><b>1.8s (p95)</b></div>', unsafe_allow_html=True)
+    st.markdown("""
+    <div class="card">
+    <b>Active References</b><br><br>
+    RBI/2023-24/104<br>
+    KYC-MD-2016
+    </div>
+    """, unsafe_allow_html=True)
 
-# =========================
-# ASK COMPLIANCE
-# =========================
-elif selected == "Ask Compliance":
-    st.title("💬 Ask Compliance")
+    st.markdown("<br>", unsafe_allow_html=True)
 
-    user_input = st.text_area("Enter your compliance query", placeholder="e.g. Is Video KYC mandatory?")
-    if st.button("Analyze"):
-        with st.spinner("Consulting RBI Master Directions..."):
-            result = ask_ai(user_input)
-        st.markdown('<div class="glass">### 🧠 AI Compliance Output</div>', unsafe_allow_html=True)
-        st.write(result)
-
-# =========================
-# JOURNEY VALIDATOR
-# =========================
-elif selected == "Journey Validator":
-    st.title("🧾 Journey Risk Engine")
-
-    journey_type = st.selectbox("Journey Type", ["Onboarding", "Remittance", "Loan", "KYC Update"])
-    risk_appetite = st.radio("Risk Appetite", ["Conservative", "Balanced", "Aggressive"])
-    steps = st.text_area("Journey Steps", placeholder="Mobile → OTP → Aadhaar → Video KYC")
-
-    if st.button("Validate Compliance Flow"):
-        query = f"Journey Type: {journey_type}\nRisk Appetite: {risk_appetite}\nSteps: {steps}"
-        with st.spinner("Running compliance engine..."):
-            result = ask_ai(query)
-        st.markdown('<div class="glass">### 📋 Compliance Report</div>', unsafe_allow_html=True)
-        st.write(result)
-
-# =========================
-# RBI CIRCULAR EXPLORER
-# =========================
-elif selected == "RBI Circular Explorer":
-    st.title("📚 RBI Circular Explorer")
-    st.markdown('<div class="glass">Search and explore RBI circulars & master directions</div>', unsafe_allow_html=True)
-    search_query = st.text_input("Search regulations...", placeholder="e.g. Digital Lending Master Directions")
-    if st.button("Search"):
-        st.info("🔍 Regulatory search feature coming soon...")
+    st.markdown("""
+    <div class="card">
+    <b style='color:#ff6b6b'>Critical Insight</b><br>
+    Missing geo-tagging in V-CIP flow may violate RBI Section 18.
+    </div>
+    """, unsafe_allow_html=True)
