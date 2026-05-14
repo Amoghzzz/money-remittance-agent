@@ -17,83 +17,63 @@ try:
 except Exception:
     client = None
 
-# =========================
-# FUTURISTIC UI STYLING
-# =========================
-st.markdown("""
-<style>
-.stApp {
-    background: linear-gradient(135deg, #0A0F1E, #1A1F3C);
-    color: #E8EEF9;
-    font-family: 'Inter', 'Segoe UI', sans-serif;
-}
+# ======================
+# ULTRA PREMIUM STYLING
+# ======================
+st.markdown(
+    """
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
 
-/* Top bar */
-header[data-testid="stHeader"] {
-    background: rgba(20,25,45,0.9);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding: 0.8rem 2rem;
-}
-header[data-testid="stHeader"]::after {
-    content: "🚀 Compliance Copilot | RBI Governance AI";
-    color: #E8EEF9;
-    font-weight: 600;
-    font-size: 16px;
-    text-shadow: 0 0 8px rgba(0,224,255,0.4);
-}
+    .stApp {
+        background: #0A0B12;
+        color: #F0F4FF;
+    }
 
-/* Glass cards */
-.glass {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    padding: 20px;
-    border-radius: 18px;
-    backdrop-filter: blur(16px);
-    box-shadow: 0 6px 40px rgba(0,0,0,0.4);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.glass:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 50px rgba(0,0,0,0.6);
-}
+    .main .block-container {
+        padding-top: 1.5rem;
+        max-width: 1400px;
+    }
 
-/* Neon buttons */
-.stButton button {
-    background: linear-gradient(90deg, #3A7CFF, #00E0FF);
-    color: white;
-    border-radius: 12px;
-    padding: 0.7rem 1.2rem;
-    border: none;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    transition: 0.3s ease;
-}
-.stButton button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(0,224,255,0.7);
-}
+    /* Glassmorphism */
+    .glass {
+        background: rgba(20, 25, 45, 0.65);
+        border: 1px solid rgba(100, 180, 255, 0.18);
+        border-radius: 20px;
+        backdrop-filter: blur(24px);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+        padding: 24px;
+    }
 
-/* Inputs */
-textarea, input, select {
-    border-radius: 12px !important;
-    background: rgba(255,255,255,0.05) !important;
-    color: #E8EEF9 !important;
-}
+    h1, h2, h3, h4 {
+        font-family: 'Space Grotesk', sans-serif;
+        letter-spacing: -0.025em;
+    }
 
-/* Sidebar */
-section[data-testid="stSidebar"] {
-    background: rgba(15,20,40,0.95);
-    border-right: 1px solid rgba(255,255,255,0.1);
-}
+    .hero-title {
+        font-size: 3.1rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, #60E0FF, #A0B8FF, #C8A8FF);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
 
-/* Headings */
-h1, h2, h3 {
-    color: #E8EEF9 !important;
-    font-weight: 700;
-    text-shadow: 0 0 8px rgba(0,224,255,0.4);
-}
-</style>
-""", unsafe_allow_html=True)
+    /* Sidebar styling */
+    section[data-testid="stSidebar"] {
+        background: #0F111D;
+        border-right: 1px solid #1E2A5E;
+    }
+
+    /* Custom Metric styling */
+    [data-testid="stMetricValue"] {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # =========================
 # ERROR SAFE AI FUNCTION
