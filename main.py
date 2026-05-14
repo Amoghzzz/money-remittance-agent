@@ -120,9 +120,9 @@ if selected == "Dashboard":
 elif selected == "Ask Compliance":
     st.title("💬 Ask Compliance Question")
 
-    user_input = st.text_area("Enter your question")
+    user_input = st.text_area("Please enter your query")
 
-    if st.button("Analyze"):
+    if st.button("Submit"):
         with st.spinner("Checking compliance rules..."):
             result = ask_ai(user_input)
 
