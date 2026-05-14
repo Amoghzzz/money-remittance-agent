@@ -1,7 +1,7 @@
 import streamlit as st
 from google import genai
 
-client = genai.Client(api_key="AIzaSyDK5hmlbm1J_o_N0CdZnZI1pIQTZ8itaCE")
+client = genai.Client(api_key=st.screts["GOOGLE_API_KEY"])
 
 def ask_agent(question):
     response = client.models.generate_content(
