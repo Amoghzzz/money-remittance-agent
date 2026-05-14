@@ -8,10 +8,10 @@ from streamlit_option_menu import option_menu
 st.set_page_config(
     page_title="Compliance Buddy",
     layout="wide",
-    page_icon="🏦"
+    page_icon="🚀"
 )
 
-# Safe API init (prevents crashes)
+# Safe API init
 try:
     client = genai.Client(api_key=st.secrets["GOOGLE_API_KEY"])
 except Exception:
@@ -25,55 +25,67 @@ st.markdown("""
 
 /* Background */
 .stApp {
-    background: radial-gradient(circle at top, #0B1F3B, #050A1A);
+    background: linear-gradient(135deg, #0A0F1E, #1A1F3C);
     color: #E8EEF9;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
 /* Glass card */
 .glass {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    padding: 18px;
-    border-radius: 16px;
-    backdrop-filter: blur(14px);
-    box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 20px;
+    border-radius: 18px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 6px 40px rgba(0,0,0,0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.glass:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 50px rgba(0,0,0,0.6);
 }
 
-/* Neon button feel */
+/* Neon button */
 .stButton button {
-    background: linear-gradient(90deg, #2F6BFF, #6EE7FF);
+    background: linear-gradient(90deg, #3A7CFF, #00E0FF);
     color: white;
-    border-radius: 10px;
-    padding: 0.6rem 1rem;
+    border-radius: 12px;
+    padding: 0.7rem 1.2rem;
     border: none;
     font-weight: 600;
+    letter-spacing: 0.5px;
     transition: 0.3s ease;
 }
-
 .stButton button:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 15px rgba(47,107,255,0.5);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(0,224,255,0.7);
 }
 
 /* Inputs */
-textarea, input {
-    border-radius: 10px !important;
+textarea, input, select {
+    border-radius: 12px !important;
+    background: rgba(255,255,255,0.05) !important;
+    color: #E8EEF9 !important;
 }
 
 /* Sidebar */
 section[data-testid="stSidebar"] {
-    background: rgba(10,15,30,0.9);
+    background: rgba(15,20,40,0.95);
+    border-right: 1px solid rgba(255,255,255,0.1);
 }
 
 /* Headings */
 h1, h2, h3 {
     color: #E8EEF9 !important;
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(0,224,255,0.4);
 }
 
+/* Small text */
 .small-text {
     font-size: 13px;
-    opacity: 0.7;
+    opacity: 0.75;
+    letter-spacing: 0.3px;
 }
 
 </style>
@@ -127,7 +139,7 @@ Technical detail:
 # =========================
 with st.sidebar:
     selected = option_menu(
-        "🏦 Compliance Buddy",
+        "🚀 Compliance Buddy",
         ["Dashboard", "Ask Compliance", "Journey Validator"],
         icons=["house", "chat", "diagram-3"],
         default_index=0
@@ -137,7 +149,7 @@ with st.sidebar:
 # DASHBOARD
 # =========================
 if selected == "Dashboard":
-    st.title("🏦 Compliance Intelligence Platform")
+    st.title("🚀 Compliance Intelligence Platform")
 
     st.markdown("""
     <div class="glass">
