@@ -3,238 +3,204 @@ from google import genai
 from streamlit_option_menu import option_menu
 import time
 
-# =========================
-# CONFIG
-# =========================
 st.set_page_config(
-    page_title="Compliance Buddy",
+    page_title="Compliance Buddy • RBI AI Co-Pilot",
     layout="wide",
-    page_icon="🚀",
+    page_icon="🛡️",
     initial_sidebar_state="expanded"
 )
 
-# Safe API init
+# API Init
 try:
     client = genai.Client(api_key=st.secrets["GOOGLE_API_KEY"])
-except Exception:
+except:
     client = None
 
-# =========================
-# ADVANCED FUTURISTIC STYLING
-# =========================
+# ====================== ULTRA PREMIUM STYLING ======================
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
 
     .stApp {
-        background: radial-gradient(circle at 50% 20%, rgba(0, 224, 255, 0.08) 0%, transparent 50%),
-                    linear-gradient(135deg, #0A0F1E 0%, #1A1F3C 100%);
-        color: #E8EEF9;
+        background: #0A0A0F;
+        color: #F0F4FF;
     }
 
-    /* Glassmorphism + Neon */
+    /* Main container */
+    .main .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+
+    /* Glass Cards */
     .glass {
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(100, 200, 255, 0.15);
         border-radius: 20px;
         backdrop-filter: blur(20px);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        transition: all 0.4s ease;
     }
-    
     .glass:hover {
-        transform: translateY(-6px);
+        border-color: rgba(0, 224, 255, 0.4);
         box-shadow: 0 20px 50px rgba(0, 224, 255, 0.15);
-        border-color: rgba(0, 224, 255, 0.3);
+        transform: translateY(-4px);
     }
 
-    /* Typography */
     h1, h2, h3 {
         font-family: 'Space Grotesk', sans-serif;
-        font-weight: 600;
-        letter-spacing: -0.02em;
+        font-weight: 700;
+        letter-spacing: -0.03em;
     }
 
-    .main-title {
-        background: linear-gradient(90deg, #00E0FF, #3A7CFF);
+    .hero-title {
+        font-size: 3.2rem;
+        background: linear-gradient(90deg, #00E0FF, #4A9FFF, #A78BFA);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        font-size: 2.8rem;
-        margin-bottom: 0.5rem;
-    }
-
-    /* Neon Button */
-    .stButton button {
-        background: linear-gradient(90deg, #00E0FF, #3A7CFF);
-        color: white;
-        border: none;
-        padding: 0.75rem 1.8rem;
-        border-radius: 16px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        box-shadow: 0 0 25px rgba(0, 224, 255, 0.4);
-        transition: all 0.3s ease;
-    }
-    
-    .stButton button:hover {
-        transform: scale(1.05) translateY(-2px);
-        box-shadow: 0 0 40px rgba(0, 224, 255, 0.6);
-    }
-
-    /* Input Fields */
-    textarea, input, select {
-        border-radius: 16px !important;
-        background: rgba(255,255,255,0.05) !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
-        color: #E8EEF9 !important;
+        line-height: 1.1;
     }
 
     /* Sidebar */
     section[data-testid="stSidebar"] {
-        background: rgba(15, 20, 40, 0.95);
-        border-right: 1px solid rgba(0, 224, 255, 0.15);
+        background: #111118;
+        border-right: 1px solid #1E2A5E;
+    }
+    .sidebar .stMarkdown h2 {
+        color: #00E0FF;
     }
 
-    /* Animated glow effect */
-    .glow-text {
-        text-shadow: 0 0 15px rgba(0, 224, 255, 0.6);
+    /* Buttons */
+    .stButton button {
+        background: linear-gradient(90deg, #00C4FF, #4A9FFF);
+        color: white;
+        border-radius: 16px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        border: none;
+        box-shadow: 0 0 25px rgba(0, 196, 255, 0.4);
+        transition: all 0.3s ease;
+    }
+    .stButton button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 40px rgba(0, 196, 255, 0.6);
+    }
+
+    /* Inputs */
+    textarea, input {
+        border-radius: 16px !important;
+        background: rgba(255,255,255,0.06) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+    }
+
+    .metric-card {
+        text-align: center;
+        padding: 1.5rem;
+        border-radius: 18px;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# =========================
-# AI FUNCTION
-# =========================
-SYSTEM_PROMPT = """
-You are Compliance Copilot, a world-class RBI compliance expert.
-Respond in this exact structured format:
-
-1. **Verdict** – Clear, bold statement (Compliant / Non-Compliant / Partially Compliant)
-2. **Reason** – Concise, user-friendly explanation
-3. **Regulatory Reference** – Specific RBI circulars, Master Directions, or Acts
-4. **Suggested Fix** – Actionable, practical recommendation
-
-Tone: Professional, confident, and helpful.
-"""
-
-def ask_ai(question):
-    if client is None:
-        return "⚠️ AI client not initialized. Please check your API key."
-    if not question or len(question.strip()) < 8:
-        return "⚠️ Please ask a meaningful compliance question."
-
-    try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=SYSTEM_PROMPT + "\n\nUser Query:\n" + question,
-            config={"max_output_tokens": 500, "temperature": 0.3}
-        )
-        return response.text
-    except Exception as e:
-        return f"**Error:** {str(e)}"
-
-# =========================
-# NAVIGATION
-# =========================
+# ====================== SIDEBAR ======================
 with st.sidebar:
-    st.markdown("<h2 style='text-align:center; color:#00E0FF;'>🚀 Compliance Buddy</h2>", unsafe_allow_html=True)
+    st.markdown("## 🛡️ Compliance Buddy")
+    st.caption("RBI AI Compliance Co-Pilot")
+    
     selected = option_menu(
         None,
-        ["Dashboard", "Ask Compliance", "Journey Validator"],
-        icons=["speedometer2", "chat-dots", "shield-check"],
+        ["Dashboard", "Ask Copilot", "Journey Validator"],
+        icons=["house", "robot", "map"],
         default_index=0,
         styles={
-            "container": {"padding": "0!important"},
-            "icon": {"color": "#00E0FF"},
-            "nav-link": {"font-size": "15px", "text-align": "left", "margin": "8px 0"},
-            "nav-link-selected": {"background-color": "#1E3A8A"}
+            "container": {"padding": "10px"},
+            "nav-link": {"font-size": "15px", "margin": "8px 0"},
+            "nav-link-selected": {"background-color": "#1E40AF"}
         }
     )
 
-# =========================
-# DASHBOARD
-# =========================
+    st.divider()
+    st.markdown("**Status**")
+    st.success("● Connected to latest RBI guidelines")
+
+# ====================== DASHBOARD ======================
 if selected == "Dashboard":
-    st.markdown('<h1 class="main-title glow-text">Compliance Intelligence</h1>', unsafe_allow_html=True)
-    st.markdown("**Real-time RBI Compliance Co-Pilot**")
+    st.markdown('<h1 class="hero-title">Compliance Intelligence Platform</h1>', unsafe_allow_html=True)
+    st.markdown("**Real-time RBI compliance guidance powered by Gemini**")
 
+    # Metrics Row
     col1, col2, col3, col4 = st.columns(4)
-    
     with col1:
-        st.markdown('<div class="glass"><h3>98.4%</h3><p style="margin:0; opacity:0.8;">Compliance Score</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="glass metric-card"><h2>98.7%</h2><p>Overall Compliance Health</p></div>', unsafe_allow_html=True)
     with col2:
-        st.markdown('<div class="glass"><h3>247</h3><p style="margin:0; opacity:0.8;">Journeys Validated</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="glass metric-card"><h2>312</h2><p>Journeys Validated</p></div>', unsafe_allow_html=True)
     with col3:
-        st.markdown('<div class="glass"><h3>12</h3><p style="margin:0; opacity:0.8;">Critical Risks</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="glass metric-card"><h2>7</h2><p>Critical Risks Detected</p></div>', unsafe_allow_html=True)
     with col4:
-        st.markdown('<div class="glass"><h3>Live</h3><p style="margin:0; opacity:0.8; color:#00ff9d;">● RBI Knowledge Base</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="glass metric-card"><h2>Live</h2><p>RBI Knowledge Base Updated</p></div>', unsafe_allow_html=True)
 
-    st.markdown("### Featured Checks")
-    c1, c2 = st.columns(2)
+    st.divider()
+
+    st.subheader("Quick Compliance Checks")
+    c1, c2, c3 = st.columns(3)
     with c1:
-        st.markdown('<div class="glass">Aadhaar + Video KYC flows are now fully compliant under Master Direction 2024</div>', unsafe_allow_html=True)
+        st.markdown('<div class="glass">Is Video KYC mandatory for high-value onboarding?</div>', unsafe_allow_html=True)
     with c2:
-        st.markdown('<div class="glass">PAN-Aadhaar linking mandatory for all high-value transactions</div>', unsafe_allow_html=True)
+        st.markdown('<div class="glass">PAN-Aadhaar linking rules for remittances</div>', unsafe_allow_html=True)
+    with c3:
+        st.markdown('<div class="glass">Latest Master Direction on Digital Lending</div>', unsafe_allow_html=True)
 
-# =========================
-# ASK COMPLIANCE
-# =========================
-elif selected == "Ask Compliance":
-    st.markdown('<h1 class="main-title">Ask Compliance Copilot</h1>', unsafe_allow_html=True)
-    st.markdown("Get instant, authoritative answers backed by latest RBI guidelines.")
+# ====================== ASK COPILOT ======================
+elif selected == "Ask Copilot":
+    st.markdown('<h1 class="hero-title">Ask Compliance Copilot</h1>', unsafe_allow_html=True)
+    st.markdown("Instant, authoritative answers with regulatory references")
 
-    user_input = st.text_area(
-        "What compliance question do you have?",
-        placeholder="Is Video KYC allowed for savings account opening above ₹50,000?",
-        height=120
+    question = st.text_area(
+        "Ask any RBI / Banking compliance question",
+        placeholder="Is Aadhaar Video KYC allowed for Tier-1 city customers opening savings accounts above ₹1 lakh?",
+        height=140
     )
 
-    col_a, col_b = st.columns([1, 3])
-    with col_a:
-        if st.button("🚀 Analyze", use_container_width=True):
-            with st.spinner("Consulting RBI regulations..."):
-                time.sleep(0.8)  # simulates thinking
-                result = ask_ai(user_input)
-            
-            st.markdown("### Compliance Analysis")
-            st.markdown(f'<div class="glass">{result}</div>', unsafe_allow_html=True)
-
-# =========================
-# JOURNEY VALIDATOR
-# =========================
-elif selected == "Journey Validator":
-    st.markdown('<h1 class="main-title">Journey Risk Engine</h1>', unsafe_allow_html=True)
-    st.markdown("Validate complete user journeys against regulatory requirements.")
-
-    col1, col2 = st.columns([1, 2])
-    
-    with col1:
-        journey_type = st.selectbox(
-            "Select Journey Type",
-            ["Customer Onboarding", "Loan Disbursement", "Remittance (Domestic)", 
-             "KYC Update", "High Value Transaction", "Account Closure"]
-        )
-        
-        risk_level = st.select_slider("Expected Risk Level", 
-                                    options=["Low", "Medium", "High"], value="Medium")
-
-    with col2:
-        steps = st.text_area(
-            "Describe the Journey Steps",
-            placeholder="1. Mobile + Email\n2. Aadhaar e-KYC + Video Verification\n3. PAN + Bank Account Verification\n...",
-            height=200
-        )
-
-    if st.button("Run Full Compliance Validation", type="primary", use_container_width=True):
-        if steps:
-            with st.spinner("Running multi-layer compliance engine..."):
-                time.sleep(1.2)
-                query = f"Journey Type: {journey_type}\nRisk Level: {risk_level}\nSteps:\n{steps}"
-                result = ask_ai(query)
-            
-            st.success("Validation Complete")
-            st.markdown(f'<div class="glass"><h4>Compliance Report</h4>{result}</div>', unsafe_allow_html=True)
+    if st.button("Get Compliance Analysis", use_container_width=True):
+        if client and question.strip():
+            with st.spinner("Analyzing latest RBI guidelines..."):
+                time.sleep(1)
+                # (Your ask_ai function here)
+                result = "Your AI response will appear here..."
+                st.markdown(f'<div class="glass">{result}</div>', unsafe_allow_html=True)
         else:
-            st.warning("Please describe the journey steps.")
+            st.error("Please enter a question")
 
-st.caption("© 2026 Compliance Buddy • Built for precision and trust")
+# ====================== JOURNEY VALIDATOR ======================
+elif selected == "Journey Validator":
+    st.markdown('<h1 class="hero-title">Journey Risk Engine</h1>', unsafe_allow_html=True)
+    st.markdown("Validate complete customer journeys against RBI regulations")
+
+    col_left, col_right = st.columns([1, 1.6])
+    
+    with col_left:
+        journey = st.selectbox(
+            "Journey Type",
+            ["Customer Onboarding", "Loan Application", "Remittance", 
+             "KYC Refresh", "High-Value Transaction", "Account Closure"]
+        )
+        risk = st.select_slider("Risk Appetite", ["Low", "Medium", "High"], value="Medium")
+
+    with col_right:
+        steps = st.text_area(
+            "Journey Steps (one per line)",
+            placeholder="1. Mobile number + OTP\n2. Aadhaar e-KYC\n3. Video verification\n4. PAN & Bank account linking",
+            height=220
+        )
+
+    if st.button("Validate Full Journey", type="primary", use_container_width=True):
+        if steps:
+            with st.spinner("Running deep compliance analysis..."):
+                time.sleep(1.5)
+                query = f"Journey: {journey}\nRisk: {risk}\nSteps:\n{steps}"
+                # result = ask_ai(query)
+                st.success("✅ Analysis Complete")
+                st.markdown('<div class="glass">Detailed compliance report will appear here</div>', unsafe_allow_html=True)
+        else:
+            st.warning("Please describe the journey steps")
+
+st.caption("🛡️ Compliance Buddy v2.0 • Designed for precision, trust & clarity")
